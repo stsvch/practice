@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "name": "Умная лампа",
+    "price": 2990,
+    "description": "Лампа с голосовым управлением и регулировкой яркости.",
+    "image": "/images/products/lamp.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Беспроводные наушники",
+    "price": 4990,
+    "description": "Наушники с шумоподавлением и длительным временем работы.",
+    "image": "/images/products/headphones.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Умные часы",
+    "price": 7990,
+    "description": "Следите за здоровьем и получайте уведомления на запястье.",
+    "image": "/images/products/smartwatch.jpg"
+  }
+]
+
