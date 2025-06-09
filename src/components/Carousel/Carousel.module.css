@@ -1,0 +1,58 @@
+/* src/components/Carousel/Carousel.module.css */
+
+.carousel {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.track {
+  display: flex;
+  transition: transform 0.4s ease-in-out;
+  will-change: transform;
+}
+
+.slide {
+  flex: 0 0 100%;
+  /* Можно задать padding или позиционирование контента внутри */
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--color-bg-transparent);
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  z-index: 10;
+}
+.arrow:hover {
+  background: var(--color-bg-hover);
+}
+.arrowLeft {
+  left: 0.5rem;
+}
+.arrowRight {
+  right: 0.5rem;
+}
+
+.dots {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+}
+.dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--color-neutral-300);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+.activeDot {
+  background: var(--color-accent);
+}
