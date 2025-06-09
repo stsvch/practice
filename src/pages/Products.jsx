@@ -1,17 +1,11 @@
+// src/pages/Products.jsx
 import React from 'react';
-import Header from '../components/Layout/Header';
-import Footer from '../components/Layout/Footer';
 
-const Products = () => {
+export default function Products() {
   return (
-    <>
-      <Header />
-      <main>
-        <h1>Products Page</h1>
-      </main>
-      <Footer />
-    </>
+    <main>
+      <h1>Каталог продукции</h1>
+      {/* ваш <ProductCard /> или сетка товаров */}
+    </main>
   );
-};
-
-export default Products;
+}

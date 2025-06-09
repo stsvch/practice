@@ -1,56 +1,6 @@
-  .header {
-  background-color: var(--color-primary);
-  padding: 1rem 0;
-}
-
-.footer {
-  background-color: var(--color-dark);
-  color: var(--color-light);
-  padding: 2rem 0;
-  text-align: center;
-}
-
-.container {
-  max-width: 1200px;
+/* src/components/Layout/Layout.module.css */
+.main {
+  max-width: 960px;
   margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo img {
-  height: 40px;
-}
-
-.navList {
-  list-style: none;
-  display: flex;
-  gap: 1.5rem;
-  margin: 0;
-  padding: 0;
-}
-
-.navList li a {
-  text-decoration: none;
-  color: var(--color-light);
-  font-weight: 500;
-}
-
-.socials a {
-  margin: 0 0.5rem;
-  text-decoration: none;
-  font-size: 1.2rem;
-}
-
-.links a {
-  margin: 0 0.75rem;
-  text-decoration: none;
-  color: var(--color-light);
-  font-size: 0.875rem;
-}
-
-.copy {
-  margin-top: 1rem;
-  font-size: 0.875rem;
+  padding: 20px;
 }

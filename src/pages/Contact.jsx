@@ -1,17 +1,11 @@
+// src/pages/Contact.jsx
 import React from 'react';
-import Header from '../components/Layout/Header';
-import Footer from '../components/Layout/Footer';
 
-const Contact = () => {
+export default function Contact() {
   return (
-    <>
-      <Header />
-      <main>
-        <h1>Contact Page</h1>
-      </main>
-      <Footer />
-    </>
+    <main>
+      <h1>Контакты</h1>
+      {/* форма, карта, телефоны */}
+    </main>
   );
-};
-
-export default Contact;
+}

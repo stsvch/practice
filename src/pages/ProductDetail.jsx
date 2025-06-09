@@ -1,17 +1,13 @@
+// src/pages/ProductDetail.jsx
 import React from 'react';
-import Header from '../components/Layout/Header';
-import Footer from '../components/Layout/Footer';
+import { useParams } from 'react-router-dom';
 
-const ProductDetail = () => {
+export default function ProductDetail() {
+  const { id } = useParams();
   return (
-    <>
-      <Header />
-      <main>
-        <h1>ProductDetail Page</h1>
-      </main>
-      <Footer />
-    </>
+    <main>
+      <h1>Товар #{id}</h1>
+      {/* детальная информация по продукту */}
+    </main>
   );
-};
-
-export default ProductDetail;
+}
