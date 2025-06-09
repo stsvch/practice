@@ -1,0 +1,29 @@
+/* src/components/Layout/Header.module.css */
+.header {
+  background-color: var(--color-primary);
+  padding: 1rem 0;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+}
+.logoImage {
+  height: 40px;
+}
+.nav {
+  display: flex;
+  gap: 1.5rem;
+}
+.navLink {
+  color: var(--color-light);
+  text-decoration: none;
+  font-weight: 500;
+}
+.active {
+  color: #61dafb;
+  border-bottom: 2px solid #61dafb;
+}

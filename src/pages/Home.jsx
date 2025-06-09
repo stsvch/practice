@@ -1,17 +1,13 @@
+// src/pages/Home.jsx
 import React from 'react';
-import Header from '../components/Layout/Header';
-import Footer from '../components/Layout/Footer';
 
-const Home = () => {
+export default function Home() {
   return (
-    <>
-      <Header />
-      <main>
-        <h1>Home Page</h1>
-      </main>
-      <Footer />
-    </>
+    <main>
+      <h1>Главная</h1>
+      <section id="hero">
+        {/* ваш баннер */}
+      </section>
+    </main>
   );
-};
-
-export default Home;
+}

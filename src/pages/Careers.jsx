@@ -1,17 +1,11 @@
+// src/pages/Careers.jsx
 import React from 'react';
-import Header from '../components/Layout/Header';
-import Footer from '../components/Layout/Footer';
 
-const Careers = () => {
+export default function Careers() {
   return (
-    <>
-      <Header />
-      <main>
-        <h1>Careers Page</h1>
-      </main>
-      <Footer />
-    </>
+    <main>
+      <h1>Вакансии и карьера</h1>
+      {/* текст, формы, списки вакансий */}
+    </main>
   );
-};
-
-export default Careers;
+}

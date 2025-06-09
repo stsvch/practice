@@ -1,35 +1,36 @@
+// src/App.js
 import React from 'react';
-import './App.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout/Layout';
+
+import Home             from './pages/Home';
+import About            from './pages/About';
+import Products         from './pages/Products';
+import ProductDetail    from './pages/ProductDetail';
+import Cases            from './pages/Cases';        // new
+import Knowledge        from './pages/Knowledge';    // new
+import News             from './pages/News';         // optionally move under Knowledge
+import Support          from './pages/Support';
+import Contact          from './pages/Contact';
+import NotFound         from './pages/NotFound';
 
 function App() {
   return (
-    <div className="App">
-      <section id="hero">
-        <h1>Мы — первые на постсоветском рынке</h1>
-        <p>Тренажеры для изолированной проработки мышц</p>
-        <button>Каталог продукции</button>
-        <button>О компании</button>
-        <button>Контакты</button>
-      </section>
-
-      <section id="about">
-        <h2>О компании</h2>
-        <h3>История и миссия</h3>
-        <p>Год основания, этапы развития…</p>
-        {/* …остальной контент */}
-      </section>
-
-      <section id="products">
-        <h2>Продукция</h2>
-        {/* здесь позже вставите <Products /> или статический список */}
-      </section>
-
-      {/* Добавьте остальные секции: Новости, Поддержка, Партнёры и т.д. */}
-
-      <footer>
-        <p>© 2025 Fitness Pioneer</p>
-      </footer>
-    </div>
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/"                 element={<Home />} />
+          <Route path="/about"            element={<About />} />
+          <Route path="/products"         element={<Products />} />
+          <Route path="/products/:id"     element={<ProductDetail />} />
+          <Route path="/cases"            element={<Cases />} />
+          <Route path="/knowledge"        element={<Knowledge />} />
+          <Route path="/support"          element={<Support />} />
+          <Route path="/contact"          element={<Contact />} />
+          <Route path="*"                 element={<NotFound />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   );
 }
 

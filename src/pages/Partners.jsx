@@ -1,17 +1,11 @@
+// src/pages/Partners.jsx
 import React from 'react';
-import Header from '../components/Layout/Header';
-import Footer from '../components/Layout/Footer';
 
-const Partners = () => {
+export default function Partners() {
   return (
-    <>
-      <Header />
-      <main>
-        <h1>Partners Page</h1>
-      </main>
-      <Footer />
-    </>
+    <main>
+      <h1>Партнёры</h1>
+      {/* логотипы, описания */}
+    </main>
   );
-};
-
-export default Partners;
+}

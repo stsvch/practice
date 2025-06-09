@@ -1,16 +1,13 @@
-  import React from 'react';
-import styles from './Layout.module.css';
+// src/components/Layout/Footer.jsx
+import React from 'react';
+import { Link } from 'react-router-dom';           // добавили
+import styles from './Footer.module.css';          // новый модуль
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
-        <div className={styles.socials}>
-          <a href="https://facebook.com" aria-label="Facebook">FB</a>
-          <a href="https://instagram.com" aria-label="Instagram">IG</a>
-          <a href="https://linkedin.com" aria-label="LinkedIn">IN</a>
-        </div>
         <div className={styles.links}>
           <Link to="/privacy">Политика конфиденциальности</Link>
           <Link to="/terms">Условия использования</Link>

@@ -1,0 +1,25 @@
+/* src/pages/Knowledge.module.css */
+.main {
+  padding: 2rem;
+}
+.section {
+  margin-bottom: 3rem;
+}
+.list {
+  list-style: disc outside;
+  margin-left: 1.5rem;
+}
+.article {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+}
+.article h3 {
+  margin: 0 0 0.5rem;
+}
+.events li {
+  margin-bottom: 1rem;
+}
+.events strong {
+  display: block;
+}

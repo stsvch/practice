@@ -1,0 +1,27 @@
+/* src/components/Layout/Footer.module.css */
+.footer {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  padding: 2rem 0;
+  text-align: center;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.socials a {
+  margin: 0 0.5rem;
+}
+.links a {
+  margin: 0 0.75rem;
+  color: var(--color-light);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+.copy {
+  font-size: 0.875rem;
+}

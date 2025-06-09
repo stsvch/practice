@@ -1,17 +1,11 @@
+// src/pages/About.jsx
 import React from 'react';
-import Header from '../components/Layout/Header';
-import Footer from '../components/Layout/Footer';
 
-const About = () => {
+export default function About() {
   return (
-    <>
-      <Header />
-      <main>
-        <h1>About Page</h1>
-      </main>
-      <Footer />
-    </>
+    <main>
+      <h1>О компании</h1>
+      <p>Здесь будет ваш контент о компании…</p>
+    </main>
   );
-};
-
-export default About;
+}
