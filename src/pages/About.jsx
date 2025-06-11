@@ -1,11 +1,14 @@
-// src/pages/About.jsx
 import React from 'react';
+import HistoryMission from '../components/About/HistoryMission';
+import Facilities from '../components/About/Facilities';
+import Certificates from '../components/About/Certificates';
 
-export default function About() {
-  return (
-    <main>
-      <h1>О компании</h1>
-      <p>Здесь будет ваш контент о компании…</p>
-    </main>
-  );
-}
+const About = () => (
+  <main className='container mx-auto px-4 py-8'>
+    <HistoryMission />
+    <Facilities />
+    <Certificates />
+  </main>
+);
+
+export default About;
