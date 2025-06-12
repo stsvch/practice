@@ -1,12 +1,12 @@
-// src/components/Layout/Header.jsx
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './Header.module.css';
+import { ThemeContext } from '../../context/ThemeContext';
 
 const navItems = [
   ['/', 'Главная'],
   ['/about', 'О нас'],
-  ['/products', 'Продукция'],
+  ['/products', 'Разработки'],
   ['/cases', 'Кейсы и галерея'],
   ['/knowledge', 'Знания и события'],
   ['/support', 'Сервис и поддержка'],
@@ -14,16 +14,15 @@ const navItems = [
 ];
 
 export default function Header() {
+  const { darkMode, toggleTheme } = useContext(ThemeContext);
+
   return (
     <header className={styles.header}>
       <div className={styles.container}>
         <NavLink to="/" className={styles.logo}>
-          <img
-            src="/logo.png"
-            alt="iNSportTech"
-            className={styles.logoImage}
-          />
+          <img src="/logo.png" alt="iNSportTech" className={styles.logoImage} />
         </NavLink>
+
         <nav className={styles.nav}>
           {navItems.map(([to, label]) => (
             <NavLink
@@ -40,6 +39,10 @@ export default function Header() {
             </NavLink>
           ))}
         </nav>
+
+        <button onClick={toggleTheme} className={styles.toggleBtn}>
+          {darkMode ? 'Светлая тема' : 'Тёмная тема'}
+        </button>
       </div>
     </header>
   );

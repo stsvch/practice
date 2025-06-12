@@ -1,13 +1,27 @@
-/* styles/variables.css */
+/* src/styles/variables.css */
+
+/* ====== Светлая тема (дефолт) ====== */
 :root {
-  --primary: #007bff;
-  --secondary: #6c757d;
-  --success: #28a745;
-  --danger: #dc3545;
+  --color-1: #F0F3FA;  /* самый светлый фон */
+  --color-2: #D5DEEF;
+  --color-3: #B1C9EF;
+  --color-4: #8AAEE0;
+  --color-5: #638ECB;  /* основной акцент */
+  --color-6: #395886;  /* самый тёмный акцент */
 
-  --background: #f8f9fa;
-  --text: #212529;
+  --bg-page: var(--color-1);
+  --text-default: #212529;
+}
 
-  --font-base: 16px;
-  --border-radius: 8px;
+/* ====== Тёмная тема ====== */
+html.dark {
+  --color-1: #021024;  /* самый тёмный фон */
+  --color-2: #052659;
+  --color-3: #5483B3;
+  --color-4: #7DA0CA;
+  --color-5: #C1E8FF;  /* основной светлый акцент */
+  --color-6: #E0F3FF;  /* самый светлый акцент */
+
+  --bg-page: var(--color-1);
+  --text-default: #E0E6FF;
 }
