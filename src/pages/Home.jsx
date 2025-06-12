@@ -1,15 +1,19 @@
-// src/pages/Home.jsx
 import React from 'react';
-import OverviewSection from '../components/Home/OverviewSection';
+import FeaturesSection from '../components/Home/FeaturesSection';
 import QuickLinks from '../components/Home/QuickLinks';
-
-const Home = () => {
-  return (
-    <main className='container mx-auto px-4 py-8'>
-      <OverviewSection />
-      <QuickLinks />
-    </main>
-  );
-};
+import CTASection from '../components/Home/CTASection';
+import IntroductionSection from '../components/Home/IntroductionSection';
+import ProcessSection from '../components/Home/ProcessSection';
+import Hero from '../components/Home/Hero';
+const Home = () => (
+  <main>
+    <IntroductionSection />
+    <Hero/>
+    <ProcessSection />
+    <FeaturesSection />
+    <QuickLinks />
+    <CTASection />
+  </main>
+);
 
 export default Home;

@@ -1,6 +1,8 @@
-/* src/components/Layout/Layout.module.css */
+/* src/components/Layout.module.css */
 .main {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 20px;
+  /* запрещаем выход контента за пределы по X */
+  overflow-x: hidden;
+
+  /* чтобы точно весь доступный горизонт занимался */
+  width: 100%;
 }
