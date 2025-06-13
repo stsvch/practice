@@ -19,7 +19,7 @@ export default function AboutPage() {
       <ClientsSection />
       <ProcessTeaser />
       <CTAJoin />
-      <Footer />
+      
     </main>
   );
 }
