@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getCaseStudies } from '../../api/caseStudiesApi';
+import RequireAdmin from '../RequireAdmin'; // ← добавляем
 
 const CaseList = () => {
   const [cases, setCases] = useState([]);
@@ -22,13 +23,18 @@ const CaseList = () => {
     <section className='mb-12'>
       <div className="flex justify-between items-center mb-4">
         <h2 className='text-2xl font-semibold'>Реализованные объекты</h2>
-        <Link
-          to="/cases/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          + Добавить кейс
-        </Link>
+        
+        {/* Показываем кнопку только для Admin */}
+        <RequireAdmin>
+          <Link
+            to="/cases/new"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            + Добавить кейс
+          </Link>
+        </RequireAdmin>
       </div>
+
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
         {cases.map(item => (
           <div key={item.id} className='border rounded p-4'>

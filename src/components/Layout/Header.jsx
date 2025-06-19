@@ -1,7 +1,10 @@
+// src/components/Header/Header.jsx
 import React, { useContext } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import styles from './Header.module.css';
 import { ThemeContext } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
+import { logout as apiLogout } from '../../api/authApi';
 
 const navItems = [
   ['/', 'Главная'],
@@ -14,6 +17,21 @@ const navItems = [
 
 export default function Header() {
   const { darkMode, toggleTheme } = useContext(ThemeContext);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const refresh = localStorage.getItem('refreshToken');
+    try {
+      if (refresh) {
+        await apiLogout(refresh);
+      }
+    } catch (err) {
+      console.error('Ошибка при выходе:', err);
+    }
+    logout();
+    navigate('/login', { replace: true });
+  };
 
   return (
     <header className={styles.header}>
@@ -37,6 +55,15 @@ export default function Header() {
               {label}
             </NavLink>
           ))}
+          {user?.roles?.includes('Admin') && (
+            <button
+              onClick={handleLogout}
+              className={styles.navLink}
+              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              Выйти
+            </button>
+          )}
         </nav>
 
         <button onClick={toggleTheme} className={styles.toggleBtn}>
