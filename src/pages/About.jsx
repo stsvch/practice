@@ -7,7 +7,6 @@ import TeamSection from '../components/About/TeamSection';
 import ClientsSection from '../components/About/ClientsSection';
 import ProcessTeaser from '../components/About/ProcessTeaser';
 import CTAJoin from '../components/About/CTAJoin';
-import Footer from '../components/Layout/Footer';
 
 export default function AboutPage() {
   return (
@@ -19,7 +18,6 @@ export default function AboutPage() {
       <ClientsSection />
       <ProcessTeaser />
       <CTAJoin />
-      
     </main>
   );
 }

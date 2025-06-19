@@ -12,22 +12,24 @@ import NewsDetail       from './pages/NewsDetail';
 import ServiceSupport   from './pages/ServiceSupport';
 import Contacts         from './pages/Contacts';
 import NotFound         from './pages/NotFound';
+import NewProduct       from './components/Products/NewProduct';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Layout>
         <Routes>
-          <Route path="/"               element={<Home />} />
-          <Route path="/about"          element={<About />} />
-          <Route path="/products"       element={<Products />} />
-          <Route path="/products/:id"   element={<ProductDetail />} />
-          <Route path="/cases"          element={<CasesGallery />} />
-          <Route path="/knowledge"      element={<KnowledgeEvents />} />
-          <Route path="/news/:slug"     element={<NewsDetail />} />
-          <Route path="/support"        element={<ServiceSupport />} />
-          <Route path="/contact"        element={<Contacts />} />
-          <Route path="*"               element={<NotFound />} />
+          <Route path="/"                     element={<Home />} />
+          <Route path="/about"                element={<About />} />
+          <Route path="/products"             element={<Products />} />
+          <Route path="/products/detail/:id"  element={<ProductDetail />} />
+          <Route path="/cases"                element={<CasesGallery />} />
+          <Route path="/knowledge"            element={<KnowledgeEvents />} />
+          <Route path="/news/:slug"           element={<NewsDetail />} />
+          <Route path="/support"              element={<ServiceSupport />} />
+          <Route path="/contact"              element={<Contacts />} />
+          <Route path="*"                     element={<NotFound />} />
+          <Route path="/products/new"         element={<NewProduct />} />
         </Routes>
       </Layout>
     </BrowserRouter>

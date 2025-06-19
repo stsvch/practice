@@ -1,6 +1,6 @@
 // src/pages/Products.jsx
 import React from 'react';
-import CategoryList from '../components/Products/CategoryList';
+import CategoryList from '../components/Products/ProductList';
 
 const Products = () => (
   <main className='container mx-auto px-4 py-8'>
