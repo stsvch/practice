@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import NewsCard from './NewsCard';
 import { Link } from 'react-router-dom';
-import { getNews } from '../../api/newsApi';
+import { getNews } from '../../api/newApi';
 
 const NewsList = () => {
   const [newsItems, setNewsItems] = useState([]);
