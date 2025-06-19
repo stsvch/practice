@@ -2,6 +2,7 @@
 import React from 'react';
 import ContactForm from '../components/Contacts/ContactForm';
 import OfficeLocations from '../components/Contacts/OfficeLocations';
+import ContactDetails from '../components/Contacts/ContactDetails';
 
 const Contacts = () => (
   <main
@@ -10,6 +11,7 @@ const Contacts = () => (
   >
     <h1 className="text-4xl font-bold text-center mb-12">Контакты</h1>
     <ContactForm />
+    <ContactDetails />
     <OfficeLocations />
   </main>
 );
