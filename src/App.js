@@ -14,6 +14,7 @@ import Contacts         from './pages/Contacts';
 import NotFound         from './pages/NotFound';
 import NewProduct       from './components/Products/NewProduct';
 import NewCase          from './components/Cases/NewCase';
+import NewNews          from './components/Knowledge/NewNews';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="*"                     element={<NotFound />} />
           <Route path="/products/new"         element={<NewProduct />} />
           <Route path="/cases/new"            element={<NewCase />} />
+          <Route path="/news/new"             element={<NewNews />} />
         </Routes>
       </Layout>
     </BrowserRouter>

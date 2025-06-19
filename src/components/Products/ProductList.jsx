@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { fetchDevelopments } from '../../api/developmentsApi'; // путь корректируй под свою структуру
+import { Link, useLocation } from 'react-router-dom';
+import { fetchDevelopments } from '../../api/developmentsApi';
 import ProductCard from './ProductCard';
-import { Link } from 'react-router-dom';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10); // можно сделать динамическим
+  const [pageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
+  const location = useLocation();
 
   useEffect(() => {
     const loadProducts = async () => {
       try {
+        setLoading(true);
         const data = await fetchDevelopments(page, pageSize);
         setProducts(data.items || []);
         setTotalCount(data.totalCount || 0);
@@ -24,7 +26,7 @@ const ProductList = () => {
     };
 
     loadProducts();
-  }, [page, pageSize]);
+  }, [page, pageSize, location]);
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -50,7 +52,6 @@ const ProductList = () => {
             ))}
           </div>
 
-          {/* Пагинация */}
           {totalPages > 1 && (
             <div className="flex justify-center mt-8 space-x-2">
               {[...Array(totalPages)].map((_, i) => (

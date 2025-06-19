@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { getCaseStudies } from '../../api/caseStudiesApi'; // не забудь создать эту функцию
+import { Link, useLocation } from 'react-router-dom';
+import { getCaseStudies } from '../../api/caseStudiesApi';
 
 const CaseList = () => {
   const [cases, setCases] = useState([]);
+  const location = useLocation();
 
   useEffect(() => {
     const loadCases = async () => {
@@ -15,7 +16,7 @@ const CaseList = () => {
       }
     };
     loadCases();
-  }, []);
+  }, [location]);
 
   return (
     <section className='mb-12'>
