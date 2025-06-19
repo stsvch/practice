@@ -1,32 +1,8 @@
-// src/components/Products/ProductList.jsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchDevelopments } from '../../api/developmentsApi'; // оставляем исходный API
+import { fetchDevelopments } from '../../api/developmentsApi';
 import { useAuth } from '../../context/AuthContext';
-
-const ProductCard = ({ product }) => (
-  <div className="border rounded p-4 flex flex-col">
-    {product.photos?.[0] ? (
-      <img
-        src={product.photos[0].path}
-        alt={product.name}
-        className="mb-4 h-40 object-cover rounded"
-      />
-    ) : (
-      <div className="mb-4 h-40 bg-gray-200 rounded flex items-center justify-center">
-        Нет изображения
-      </div>
-    )}
-    <h3 className="text-xl font-medium mb-2">{product.name}</h3>
-    <p className="text-sm mb-2 line-clamp-3">{product.description}</p>
-    <Link
-      to={`/products/${product.id}`}
-      className="mt-auto text-blue-600 hover:underline"
-    >
-      Подробнее
-    </Link>
-  </div>
-);
+import ProductCard from './ProductCard';
 
 const ProductList = () => {
   const { user } = useAuth();
@@ -37,19 +13,23 @@ const ProductList = () => {
   const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
       setLoading(true);
       try {
-        const data = await fetchDevelopments(page, pageSize);
-        setProducts(data.items || []);
-        setTotalCount(data.totalCount || 0);
+        const { items, totalCount } = await fetchDevelopments(page, pageSize);
+        if (!cancelled) {
+          setProducts(items);
+          setTotalCount(totalCount);
+        }
       } catch (err) {
         console.error('Ошибка загрузки продуктов:', err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     load();
+    return () => { cancelled = true; };
   }, [page]);
 
   const totalPages = Math.ceil(totalCount / pageSize);

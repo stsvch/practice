@@ -8,36 +8,32 @@ export const fetchDevelopments = async (page = 1, pageSize = 10) => {
   const res = await api.get(ENDPOINT, {
     params: { pageNumber: page, pageSize },
   });
-  return res.data; // PagedList<DevelopmentDto>
+  return res.data; // { items: DevelopmentDto[], totalCount: number }
 };
 
 // Получение одной разработки по ID
 export const fetchDevelopmentById = async (id) => {
   const res = await api.get(`${ENDPOINT}/${id}`);
-  return res.data;
+  return res.data; // DevelopmentDto
 };
 
-// Создание новой разработки (без файла)
 export const createDevelopment = async ({ name, description }) => {
-  // CreateDevelopmentCommand принимает свойства Name и Description
-  const res = await api.post(ENDPOINT, { name, description });
-  return res.data;
+  const payload = {
+    Title:       name,          // соответствует positional-аргументу Title
+    Description: description,   // соответствует Description
+    PhotoPaths:  []             // обязательно передать, даже если пусто
+  };
+
+  const res = await api.post(ENDPOINT, payload);
+
+  // .NET вернёт заголовок Location: /api/developments/{newId}
+  const loc = res.headers['location'] || res.headers['Location'];
+  if (!loc) throw new Error('Не удалось получить ID новой разработки');
+
+  return loc.split('/').pop();
 };
 
-// Обновление разработки
-export const updateDevelopment = async (id, updateData) => {
-  // UpdateDevelopmentCommand требует Id
-  const res = await api.put(`${ENDPOINT}/${id}`, { id, ...updateData });
-  return res.data;
-};
-
-// Удаление разработки
-export const deleteDevelopment = async (id) => {
-  const res = await api.delete(`${ENDPOINT}/${id}`);
-  return res.data;
-};
-
-// Загрузить фото к разработке
+// Загрузка фото к разработке
 export const uploadDevelopmentPhoto = async (devId, file) => {
   const formData = new FormData();
   formData.append('file', file);
@@ -47,4 +43,16 @@ export const uploadDevelopmentPhoto = async (devId, file) => {
     { headers: { 'Content-Type': 'multipart/form-data' } }
   );
   return res.data; // { photoId, path }
+};
+
+// Обновление (если понадобится)
+export const updateDevelopment = async (id, updateData) => {
+  const res = await api.put(`${ENDPOINT}/${id}`, { id, ...updateData });
+  return res.data;
+};
+
+// Удаление
+export const deleteDevelopment = async (id) => {
+  const res = await api.delete(`${ENDPOINT}/${id}`);
+  return res.data;
 };

@@ -1,11 +1,12 @@
+// src/components/Products/NewProduct.jsx
 import React, { useState } from 'react';
-import { createDevelopment } from '../../api/developmentsApi';
+import {
+  createDevelopment,
+  uploadDevelopmentPhoto
+} from '../../api/developmentsApi';
 
 const NewProduct = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-  });
+  const [formData, setFormData] = useState({ name: '', description: '' });
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -15,27 +16,28 @@ const NewProduct = () => {
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    setFile(e.target.files[0] || null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const data = new FormData();
-    data.append('name', formData.name);
-    data.append('description', formData.description);
-    if (file) {
-      data.append('image', file); // имя должно совпадать с ожидаемым параметром на бэке
-    }
-
+    console.log('▶️ handleSubmit fired', formData, file);
+    setLoading(true);
+    setMessage('');
     try {
-      setLoading(true);
-      await createDevelopment(data);
+      // 1️⃣ Создаем запись без файла
+      const newId = await createDevelopment(formData);
+
+      // 2️⃣ Если выбрана картинка — закидываем ее
+      if (file) {
+        await uploadDevelopmentPhoto(newId, file);
+      }
+
       setMessage('Товар успешно добавлен!');
       setFormData({ name: '', description: '' });
       setFile(null);
     } catch (err) {
-      console.error('Ошибка при добавлении товара:', err);
+      console.error('Ошибка при добавлении товара:', err.response?.data || err);
       setMessage('Ошибка при добавлении товара.');
     } finally {
       setLoading(false);
@@ -52,6 +54,7 @@ const NewProduct = () => {
           value={formData.name}
           onChange={handleChange}
           className="w-full border p-2 rounded"
+          required
         />
         <textarea
           name="description"
@@ -59,11 +62,13 @@ const NewProduct = () => {
           value={formData.description}
           onChange={handleChange}
           className="w-full border p-2 rounded"
+          required
         />
         <input
           type="file"
           onChange={handleFileChange}
           className="w-full border p-2 rounded"
+          accept="image/*"
         />
         <button
           type="submit"
@@ -73,10 +78,11 @@ const NewProduct = () => {
           {loading ? 'Добавление...' : 'Добавить'}
         </button>
       </form>
-      {message && <p className="mt-4 text-center">{message}</p>}
+      {message && (
+        <p className="mt-4 text-center">{message}</p>
+      )}
     </div>
   );
 };
 
 export default NewProduct;
-
