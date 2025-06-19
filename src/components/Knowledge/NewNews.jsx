@@ -1,6 +1,6 @@
 // src/components/Knowledge/NewNews.jsx
 import React, { useState } from 'react';
-import { createNews, uploadNewsPhoto } from '../../api/newsApi';
+import { createNews, uploadNewsPhoto } from '../../api/newApi';
 import { useNavigate } from 'react-router-dom';
 
 const NewNews = () => {
