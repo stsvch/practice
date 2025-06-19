@@ -13,6 +13,7 @@ import ServiceSupport   from './pages/ServiceSupport';
 import Contacts         from './pages/Contacts';
 import NotFound         from './pages/NotFound';
 import NewProduct       from './components/Products/NewProduct';
+import NewCase          from './components/Cases/NewCase';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/contact"              element={<Contacts />} />
           <Route path="*"                     element={<NotFound />} />
           <Route path="/products/new"         element={<NewProduct />} />
+          <Route path="/cases/new"            element={<NewCase />} />
         </Routes>
       </Layout>
     </BrowserRouter>
