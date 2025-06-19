@@ -1,4 +1,3 @@
-// src/components/Cases/NewCase.jsx
 import React, { useState } from 'react';
 import { createCaseStudy } from '../../api/caseStudiesApi';
 
@@ -6,17 +5,29 @@ const NewCase = () => {
   const [form, setForm] = useState({
     name: '',
     description: '',
-    img: '',
+    img: null,
   });
 
   const handleChange = e => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value, files } = e.target;
+    setForm(prev => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('name', form.name);
+    formData.append('description', form.description);
+    if (form.img) {
+      formData.append('img', form.img);
+    }
+
     try {
-      await createCaseStudy(form);
+      await createCaseStudy(formData);
       alert('Кейс добавлен!');
     } catch (err) {
       console.error(err);
@@ -25,7 +36,11 @@ const NewCase = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto my-10">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 max-w-xl mx-auto mt-28 mb-10"
+      encType="multipart/form-data"
+    >
       <input
         name="name"
         placeholder="Название кейса"
@@ -40,13 +55,14 @@ const NewCase = () => {
       />
       <input
         name="img"
-        placeholder="URL изображения"
+        type="file"
+        accept="image/*"
         onChange={handleChange}
         className="w-full border p-2 rounded"
       />
       <button
         type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-6"
       >
         Добавить кейс
       </button>
