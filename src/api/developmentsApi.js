@@ -1,45 +1,50 @@
-import axios from 'axios';
+// src/api/developmentsApi.js
+import api from './axiosInstance';
 
-const API_URL = 'http://localhost:5000/api/developments'; // замени на свой адрес при деплое
+const ENDPOINT = '/developments';
 
-// ✅ Получение списка разработок
+// Получение списка разработок
 export const fetchDevelopments = async (page = 1, pageSize = 10) => {
-  const response = await axios.get(API_URL, {
+  const res = await api.get(ENDPOINT, {
     params: { pageNumber: page, pageSize },
   });
-  return response.data;
+  return res.data; // PagedList<DevelopmentDto>
 };
 
-// ✅ Получение одного элемента по ID
+// Получение одной разработки по ID
 export const fetchDevelopmentById = async (id) => {
-  const response = await axios.get(`${API_URL}/${id}`);
-  return response.data;
+  const res = await api.get(`${ENDPOINT}/${id}`);
+  return res.data;
 };
 
-// ✅ Создание новой разработки с файлом
-export const createDevelopment = async ({ name, description, file }) => {
-  const formData = new FormData();
-  formData.append('Name', name);
-  formData.append('Description', description);
-  formData.append('File', file);
-
-  const response = await axios.post(API_URL, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-
-  return response.data;
+// Создание новой разработки (без файла)
+export const createDevelopment = async ({ name, description }) => {
+  // CreateDevelopmentCommand принимает свойства Name и Description
+  const res = await api.post(ENDPOINT, { name, description });
+  return res.data;
 };
 
-// ✅ Удаление по ID
-export const deleteDevelopment = async (id) => {
-  const response = await axios.delete(`${API_URL}/${id}`);
-  return response.data;
-};
-
-// ✅ Обновление (если нужно)
+// Обновление разработки
 export const updateDevelopment = async (id, updateData) => {
-  const response = await axios.put(`${API_URL}/${id}`, updateData);
-  return response.data;
+  // UpdateDevelopmentCommand требует Id
+  const res = await api.put(`${ENDPOINT}/${id}`, { id, ...updateData });
+  return res.data;
+};
+
+// Удаление разработки
+export const deleteDevelopment = async (id) => {
+  const res = await api.delete(`${ENDPOINT}/${id}`);
+  return res.data;
+};
+
+// Загрузить фото к разработке
+export const uploadDevelopmentPhoto = async (devId, file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await api.post(
+    `${ENDPOINT}/${devId}/photos`,
+    formData,
+    { headers: { 'Content-Type': 'multipart/form-data' } }
+  );
+  return res.data; // { photoId, path }
 };
