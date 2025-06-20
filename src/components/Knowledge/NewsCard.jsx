@@ -2,21 +2,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const NewsCard = ({ title, summary, image, date, slug }) => (
-  <div className="border border-red-500 bg-yellow-100 rounded-xl p-2 m-1">
-    <img src={image} alt={title} className="w-full h-48 object-cover" />
-    <div className="p-4 flex flex-col h-full">
-      <p className="text-sm text-gray-500 uppercase mb-1">Новости</p>
-      <h2 className="text-lg font-bold mb-2">{title}</h2>
-      <p className="text-sm text-gray-700 mb-4 line-clamp-3">{summary}</p>
-      <div className="mt-auto flex justify-between items-center">
-        <Link to={`/news/${slug}`} className="text-blue-600 text-sm hover:underline">
-          Читать далее →
-        </Link>
-        <span className="text-xs text-gray-400">{date}</span>
-      </div>
+const NewsCard = ({ id, title, description, photoPaths }) => {
+  const imgSrc = photoPaths?.[0]
+    ? `${process.env.REACT_APP_API_URL.replace('/api','')}${photoPaths[0]}`
+    : '/placeholder-news.jpg';
+
+  return (
+    <div className="border rounded p-4 flex flex-col">
+      <img
+        src={imgSrc}
+        alt={title}
+        className="mb-4 h-40 object-cover rounded"
+      />
+      <h3 className="text-xl font-medium mb-2">{title}</h3>
+      <p className="text-sm mb-2 line-clamp-3">{description}</p>
+      <Link to={`/news/${id}`} className="mt-auto text-blue-600 hover:underline">
+        Читать далее →
+      </Link>
     </div>
-  </div>
-);
+  );
+};
 
 export default NewsCard;
