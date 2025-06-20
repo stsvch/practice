@@ -56,3 +56,9 @@ export const deleteDevelopment = async (id) => {
   const res = await api.delete(`${ENDPOINT}/${id}`);
   return res.data;
 };
+
+// в конце файла
+export const removeDevelopmentPhoto = async (devId, photoId) => {
+  const res = await api.delete(`${ENDPOINT}/${devId}/photos/${photoId}`);
+  return res.data;
+};

@@ -1,56 +1,80 @@
-// src/api/newsApi.js
 import api from './axiosInstance';
 
 const ENDPOINT = '/news';
 
-// Получить все новости (с пагинацией)
+// 1) Получить все новости (с пагинацией)
 export const getNews = async (page = 1, pageSize = 10) => {
   const res = await api.get(ENDPOINT, {
     params: { pageNumber: page, pageSize },
   });
-  return res.data; // контроллер возвращает PagedList<NewsDto>
+  // res.data === { items: NewsDto[], totalCount: number }
+  return res.data;
 };
 
-// Получить новость по ID
+// 2) Получить одну новость по ID
 export const getNewsById = async (id) => {
   const res = await api.get(`${ENDPOINT}/${id}`);
+  // res.data === NewsDto
   return res.data;
 };
 
-// Создать новую новость
-export const createNews = async (newsData) => {
-  // newsData — объект, соответствующий CreateNewsCommand (например, { title, content, ... })
-  const res = await api.post(ENDPOINT, newsData);
-  return res.data;
+// 3) Создать новость (CreateNewsCommand)
+//    У бэка CreateNewsCommand ожидает поля Title, Description и PhotoPaths: List<string>
+export const createNews = async ({ title, description }) => {
+  const payload = {
+    Title:       title,        // соответствует параметру Title
+    Description: description,  // соответствует Description
+    PhotoPaths:  []            // обязательно, чтобы не было 400 Bad Request
+  };
+
+  const res = await api.post(ENDPOINT, payload);
+
+  // Новый ID, вернётся либо в заголовке Location, либо в теле (если мы добавили { id = newId })
+  // Попробуем сначала из заголовка:
+  let newId = res.headers['location']?.split('/').pop();
+  if (!newId && res.data?.id) {
+    newId = res.data.id;
+  }
+  if (!newId) {
+    throw new Error('Не удалось получить ID новой новости');
+  }
+  return newId;
 };
 
-// Обновить новость
-export const updateNews = async (id, newsData) => {
-  // UpdateNewsCommand требует поле id
-  const res = await api.put(`${ENDPOINT}/${id}`, { id, ...newsData });
-  return res.data;
-};
-
-// Удалить новость
-export const deleteNews = async (id) => {
-  const res = await api.delete(`${ENDPOINT}/${id}`);
-  return res.data;
-};
-
-// Загрузить фото к новости
+// 4) Загрузить фото к уже созданной новости
 export const uploadNewsPhoto = async (newsId, file) => {
   const formData = new FormData();
   formData.append('file', file);
+
   const res = await api.post(
     `${ENDPOINT}/${newsId}/photos`,
     formData,
     { headers: { 'Content-Type': 'multipart/form-data' } }
   );
-  return res.data; // { photoId, path }
+  // res.data === { photoId: Guid, path: string }
+  return res.data;
 };
 
-// Удалить фото из новости
+// 5) Удалить фото
 export const removeNewsPhoto = async (newsId, photoId) => {
   const res = await api.delete(`${ENDPOINT}/${newsId}/photos/${photoId}`);
+  return res.data;
+};
+
+// 6) Обновить новость
+export const updateNews = async (id, { title, description }) => {
+  const payload = {
+    Id:          id,
+    Title:       title,
+    Description: description
+    // PhotoPaths при обновлении обычно не нужен или может быть пустым
+  };
+  const res = await api.put(`${ENDPOINT}/${id}`, payload);
+  return res.data;
+};
+
+// 7) Удалить новость
+export const deleteNews = async (id) => {
+  const res = await api.delete(`${ENDPOINT}/${id}`);
   return res.data;
 };
