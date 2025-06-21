@@ -11,10 +11,17 @@ export const fetchDevelopments = async (page = 1, pageSize = 10) => {
   return res.data; // { items: DevelopmentDto[], totalCount: number }
 };
 
-// Получение одной разработки по ID
+
+// Забираем DTO с photos: PhotoDto[]
 export const fetchDevelopmentById = async (id) => {
   const res = await api.get(`${ENDPOINT}/${id}`);
-  return res.data; // DevelopmentDto
+  return res.data; // { id, name, description, photos: [{ id, path }, …], … }
+};
+
+
+// Удаляем по photoId
+export const removeDevelopmentPhoto = async (devId, photoId) => {
+  await api.delete(`${ENDPOINT}/${devId}/photos/${photoId}`);
 };
 
 export const createDevelopment = async ({ name, description }) => {
@@ -45,10 +52,13 @@ export const uploadDevelopmentPhoto = async (devId, file) => {
   return res.data; // { photoId, path }
 };
 
-// Обновление (если понадобится)
-export const updateDevelopment = async (id, updateData) => {
-  const res = await api.put(`${ENDPOINT}/${id}`, { id, ...updateData });
-  return res.data;
+export const updateDevelopment = async (id, { title, description }) => {
+  const payload = {
+    Id:          id,
+    Title:       title,
+    Description: description
+  };
+  await api.put(`${ENDPOINT}/${id}`, payload);
 };
 
 // Удаление
@@ -57,8 +67,9 @@ export const deleteDevelopment = async (id) => {
   return res.data;
 };
 
-// в конце файла
-export const removeDevelopmentPhoto = async (devId, photoId) => {
-  const res = await api.delete(`${ENDPOINT}/${devId}/photos/${photoId}`);
-  return res.data;
+export const removeDevelopmentPhotoByPath = async (devId, path) => {
+  // DELETE /developments/{devId}/photos?path=/uploads/xxx.png
+  await api.delete(`${ENDPOINT}/${devId}/photos`, {
+    params: { path }
+  });
 };

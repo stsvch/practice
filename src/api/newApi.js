@@ -55,10 +55,17 @@ export const uploadNewsPhoto = async (newsId, file) => {
   return res.data;
 };
 
-// 5) Удалить фото
 export const removeNewsPhoto = async (newsId, photoId) => {
   const res = await api.delete(`${ENDPOINT}/${newsId}/photos/${photoId}`);
   return res.data;
+};
+
+// 5b) Удалить фото по пути (новый)
+export const removeNewsPhotoByPath = async (newsId, path) => {
+  await api.delete(
+    `${ENDPOINT}/${newsId}/photos`,
+    { params: { path } }
+  );
 };
 
 // 6) Обновить новость
