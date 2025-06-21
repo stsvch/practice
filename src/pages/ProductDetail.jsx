@@ -6,114 +6,95 @@ import {
   updateDevelopment,
   deleteDevelopment,
   uploadDevelopmentPhoto,
-  removeDevelopmentPhoto
+  removeDevelopmentPhotoByPath
 } from '../api/developmentsApi';
 import { useAuth } from '../context/AuthContext';
 
 export default function ProductDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const isAdmin = user?.roles?.includes('Admin');
+  const { id }      = useParams();
+  const navigate    = useNavigate();
+  const { user }    = useAuth();
+  const isAdmin     = user?.roles?.includes('Admin');
 
-  const [dev, setDev] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [dev, setDev]           = useState(null);
+  const [loading, setLoading]   = useState(true);
   const [editMode, setEditMode] = useState(false);
-  const [form, setForm] = useState({ title: '', description: '' });
-  const fileRef = useRef();
+  const [form, setForm]         = useState({ title: '', description: '' });
+  const fileRef                = useRef();
 
-  // Загрузка детали разработки
+  // базовый URL без «/api»
+  const API_BASE = process.env.REACT_APP_API_URL.replace(/\/api$/, '');
+
+  // загрузка данных
   useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    fetchDevelopmentById(id)
-      .then(data => {
-        if (!cancelled) {
+    let canceled = false;
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchDevelopmentById(id);
+        if (!canceled) {
           setDev(data);
           setForm({ title: data.title, description: data.description });
         }
-      })
-      .catch(() => {
-        if (!cancelled) setDev(null);
-      })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
+      } finally {
+        if (!canceled) setLoading(false);
+      }
+    })();
+    return () => { canceled = true; };
   }, [id]);
 
-  if (loading) return <p className="p-6">Загрузка...</p>;
-  if (dev === null) return <Navigate to="/404" replace />;
+  if (loading) return <p className="p-6">Загрузка…</p>;
+  if (!dev)    return <Navigate to="/404" replace />;
 
-  // Сохранить изменения
-  const onSave = async () => {
+  // сохранить изменения
+  const handleSave = async () => {
     try {
-      await updateDevelopment(id, { title: form.title, description: form.description });
-      const updated = await fetchDevelopmentById(id);
-      setDev(updated);
+      await updateDevelopment(id, {
+        title:       form.title,
+        description: form.description
+      });
+      setDev(await fetchDevelopmentById(id));
       setEditMode(false);
-    } catch (err) {
-      console.error(err);
+    } catch {
       alert('Не удалось сохранить изменения');
     }
   };
 
-  // Удалить всю разработку
-  const onDelete = async () => {
-    if (!window.confirm('Удалить эту разработку?')) return;
-    try {
-      await deleteDevelopment(id);
-      navigate('/products', { replace: true });
-    } catch (err) {
-      console.error(err);
-      alert('Не удалось удалить разработку');
-    }
+  // удалить всю запись
+  const handleDeleteDev = async () => {
+    if (!window.confirm('Удалить всю запись?')) return;
+    await deleteDevelopment(id);
+    navigate('/products', { replace: true });
   };
 
-  // Загрузить новую фотографию
-  const onUpload = async e => {
+  // загрузить новое фото
+  const handleUpload = async e => {
     const file = e.target.files?.[0];
     if (!file) return;
-    try {
-      await uploadDevelopmentPhoto(id, file);
-      const updated = await fetchDevelopmentById(id);
-      setDev(updated);
-      fileRef.current.value = null;
-    } catch (err) {
-      console.error(err);
-      alert('Не удалось загрузить фото');
-    }
+    await uploadDevelopmentPhoto(id, file);
+    setDev(await fetchDevelopmentById(id));
+    fileRef.current.value = null;
   };
 
-  // Удалить фотографию по пути
-  const onRemovePhoto = async path => {
-    if (!window.confirm('Удалить эту фотографию?')) return;
-    try {
-      await removeDevelopmentPhoto(id, path);
-      const updated = await fetchDevelopmentById(id);
-      setDev(updated);
-    } catch (err) {
-      console.error(err);
-      alert('Не удалось удалить фото');
-    }
+  // удалить отдельное фото по пути
+  const handleRemovePhoto = async path => {
+    if (!window.confirm('Удалить это фото?')) return;
+    await removeDevelopmentPhotoByPath(id, path);
+    setDev(d => ({
+      ...d,
+      photoPaths: d.photoPaths.filter(p => p !== path)
+    }));
   };
 
-  // Базовый URL без "/api"
-  const base = process.env.REACT_APP_API_URL.replace(/\/api$/, '');
+  const photoPaths = Array.isArray(dev.photoPaths) ? dev.photoPaths : [];
 
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-6">
-      {/* Навигация и удаление */}
-      <div className="flex justify-between items-center">
+    <div className="max-w-3xl mx-auto p-6 space-y-8">
+      {/* Назад */}
+      <div>
         <Link to="/products" className="text-blue-600 hover:underline">
-          &larr; К списку
+          ← К списку
         </Link>
-        {isAdmin && (
-          <button
-            onClick={onDelete}
-            className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-          >
-            Удалить
-          </button>
-        )}
       </div>
 
       {/* Заголовок и описание */}
@@ -133,7 +114,7 @@ export default function ProductDetail() {
             />
             <div className="space-x-2">
               <button
-                onClick={onSave}
+                onClick={handleSave}
                 className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
               >
                 Сохранить
@@ -162,38 +143,65 @@ export default function ProductDetail() {
         )}
       </div>
 
-      {/* Галерея фотографий */}
-      <div>
-        <h2 className="text-2xl font-semibold mb-2">Фотографии</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {dev.photoPaths?.map((path, idx) => (
-            <div key={idx} className="relative">
-              <img
-                src={`${base}${path}`}
-                alt={`${dev.title} ${idx + 1}`}
-                className="w-full h-40 object-cover rounded"
-              />
-              {isAdmin && (
-                <button
-                  onClick={() => onRemovePhoto(path)}
-                  className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
-                >
-                  ×
-                </button>
-              )}
+      {/* Галерея фотографий и управление */}
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-semibold mb-2">Фотографии</h2>
+          {photoPaths.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {photoPaths.map((path, idx) => {
+                const url = path.startsWith('http')
+                  ? path
+                  : `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+                return (
+                  <div key={idx} className="relative">
+                    <img
+                      src={url}
+                      alt={`${dev.title} ${idx + 1}`}
+                      className="w-full h-40 object-cover rounded"
+                    />
+                    {isAdmin && (
+                      <button
+                        onClick={() => handleRemovePhoto(path)}
+                        className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          ) : (
+            <div className="w-full h-48 bg-gray-100 rounded flex items-center justify-center">
+              Нет фотографий
+            </div>
+          )}
         </div>
+
         {isAdmin && (
-          <div className="mt-4">
-            <label className="block mb-1">Добавить фото</label>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              onChange={onUpload}
-              className="border p-1 rounded"
-            />
+          <div className="space-y-4">
+            {/* Загрузка нового фото */}
+            <div>
+              <label className="block mb-1 font-medium">Добавить фото</label>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                onChange={handleUpload}
+                className="border p-1 rounded"
+              />
+            </div>
+
+            {/* Кнопка удаления записи внизу */}
+            <div className="text-center">
+              <button
+                onClick={handleDeleteDev}
+                className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
+              >
+                Удалить запись
+              </button>
+            </div>
           </div>
         )}
       </div>

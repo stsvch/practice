@@ -1,173 +1,196 @@
 // src/components/Knowledge/NewsDetail.jsx
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
+import { useParams, Navigate, Link, useNavigate } from 'react-router-dom';
 import {
   getNewsById,
   updateNews,
+  deleteNews,
   uploadNewsPhoto,
-  removeNewsPhoto,
-  deleteNews
+  removeNewsPhotoByPath
 } from '../../api/newApi';
 import { useAuth } from '../../context/AuthContext';
 
 export default function NewsDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const isAdmin = user?.roles?.includes('Admin');
+  const { id }       = useParams();
+  const navigate     = useNavigate();
+  const { user }     = useAuth();
+  const isAdmin      = user?.roles?.includes('Admin');
 
-  const [news, setNews] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [news, setNews]         = useState(null);
+  const [loading, setLoading]   = useState(true);
   const [editMode, setEditMode] = useState(false);
-  const [form, setForm] = useState({ title: '', description: '' });
-  const [photoFile, setPhotoFile] = useState(null);
-  const [error, setError] = useState('');
+  const [form, setForm]         = useState({ title: '', description: '' });
+  const fileInputRef            = useRef();
+  const [error, setError]       = useState('');
 
-  // Загрузка данных новости
+  // Base URL without "/api"
+  const API_BASE = process.env.REACT_APP_API_URL.replace(/\/api$/, '');
+
+  // Load news on mount
   useEffect(() => {
-    async function fetchDetail() {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
       try {
         const data = await getNewsById(id);
-        setNews(data);
-        setForm({ title: data.title, description: data.description });
+        if (!cancelled) {
+          setNews(data);
+          setForm({ title: data.title, description: data.description });
+        }
       } catch (err) {
-        console.error(err);
+        console.error('Error loading news:', err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
-    }
-    fetchDetail();
+    })();
+    return () => { cancelled = true; };
   }, [id]);
 
-  // Обработчик изменения полей и выбора файла
-  const handleInput = e => {
-    const { name, value, files } = e.target;
-    if (files && files[0]) {
-      setPhotoFile(files[0]);
-    } else {
-      setForm(prev => ({ ...prev, [name]: value }));
-    }
-  };
+  if (loading) return <p className="p-6">Загрузка…</p>;
+  if (!news)   return <Navigate to="/404" replace />;
 
-  // Сохранение изменений заголовка/описания
-  const handleUpdate = async () => {
+  // Save title/description
+  const handleSave = async () => {
+    setError('');
     try {
       await updateNews(id, { title: form.title, description: form.description });
       const updated = await getNewsById(id);
       setNews(updated);
       setEditMode(false);
-    } catch {
-      setError('Ошибка при обновлении');
+    } catch (err) {
+      console.error('Error updating news:', err);
+      setError('Не удалось сохранить изменения');
     }
   };
 
-  // Загрузка нового фото
-  const handleUploadPhoto = async () => {
-    if (!photoFile) return;
-    try {
-      const { path } = await uploadNewsPhoto(id, photoFile);
-      setNews(prev => ({
-        ...prev,
-        photoPaths: [...(prev.photoPaths || []), path]
-      }));
-      setPhotoFile(null);
-    } catch {
-      setError('Ошибка при загрузке фото');
-    }
-  };
-
-  // Удаление фото по пути
-  const handleRemovePhoto = async (path) => {
-    try {
-      await removeNewsPhoto(id, path);
-      setNews(prev => ({
-        ...prev,
-        photoPaths: prev.photoPaths.filter(p => p !== path)
-      }));
-    } catch {
-      setError('Ошибка при удалении фото');
-    }
-  };
-
-  // Удаление самой новости
-  const handleDeleteNews = async () => {
+  // Delete news
+  const handleDelete = async () => {
     if (!window.confirm('Удалить эту новость окончательно?')) return;
     try {
       await deleteNews(id);
       navigate('/knowledge', { replace: true });
-    } catch {
-      setError('Ошибка при удалении новости');
+    } catch (err) {
+      console.error('Error deleting news:', err);
+      setError('Не удалось удалить новость');
     }
   };
 
-  if (loading) return <p>Загрузка...</p>;
-  if (!news)  return <p>Новость не найдена.</p>;
+  // Upload new photo
+  const handleUpload = async (e) => {
+    setError('');
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      await uploadNewsPhoto(id, file);
+      const updated = await getNewsById(id);
+      setNews(updated);
+      fileInputRef.current.value = null;
+    } catch (err) {
+      console.error('Error uploading photo:', err);
+      setError('Не удалось загрузить фото');
+    }
+  };
+
+  // Remove photo by path
+  const handleRemovePhoto = async (path) => {
+    if (!window.confirm('Удалить это фото?')) return;
+    setError('');
+    try {
+      await removeNewsPhotoByPath(id, path);
+      setNews(n => ({
+        ...n,
+        photoPaths: n.photoPaths.filter(p => p !== path)
+      }));
+    } catch (err) {
+      console.error('Error removing photo:', err);
+      setError('Не удалось удалить фото');
+    }
+  };
+
+  const photoPaths = Array.isArray(news.photoPaths) ? news.photoPaths : [];
 
   return (
     <div className="max-w-2xl mx-auto mt-24 p-6 space-y-6">
-      {error && <div className="p-2 bg-red-100 text-red-700 rounded">{error}</div>}
-
-      {/* Заголовок и описание */}
-      {editMode ? (
-        <div className="space-y-4">
-          <input
-            name="title"
-            value={form.title}
-            onChange={handleInput}
-            className="w-full border p-2 rounded"
-          />
-          <textarea
-            name="description"
-            value={form.description}
-            onChange={handleInput}
-            className="w-full border p-2 rounded"
-            rows={4}
-          />
-          <div>
-            <button
-              onClick={handleUpdate}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            >
-              Сохранить
-            </button>
-            <button
-              onClick={() => setEditMode(false)}
-              className="ml-2 bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-            >
-              Отмена
-            </button>
-          </div>
-        </div>
-      ) : (
-        <>
-          <h1 className="text-3xl font-bold">{news.title}</h1>
-          <p className="text-gray-700">{news.description}</p>
-        </>
+      {error && (
+        <div className="p-2 bg-red-100 text-red-700 rounded">{error}</div>
       )}
 
-      {/* Фотографии */}
+      {/* Title & Description */}
       <div>
-        <h2 className="text-xl font-semibold mb-2">Фотографии</h2>
+        {editMode ? (
+          <div className="space-y-4">
+            <input
+              name="title"
+              value={form.title}
+              onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+              className="w-full border p-2 rounded"
+            />
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+              className="w-full border p-2 rounded"
+              rows={4}
+            />
+            <div className="space-x-2">
+              <button
+                onClick={handleSave}
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+              >
+                Сохранить
+              </button>
+              <button
+                onClick={() => setEditMode(false)}
+                className="px-4 py-2 border rounded hover:bg-gray-100"
+              >
+                Отменить
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-3xl font-bold">{news.title}</h1>
+            <p className="text-gray-700">{news.description}</p>
+            {isAdmin && (
+              <button
+                onClick={() => setEditMode(true)}
+                className="mt-4 bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+              >
+                Редактировать
+              </button>
+            )}
+          </>
+        )}
+      </div>
 
-        {news.photoPaths?.length > 0 ? (
+      {/* Photos */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Фотографии</h2>
+        {photoPaths.length > 0 ? (
           <div className="flex flex-wrap gap-4">
-            {news.photoPaths.map((path, idx) => (
-              <div key={idx} className="relative">
-                <img
-                  src={`${process.env.REACT_APP_API_URL.replace('/api','')}${path}`}
-                  alt={`Фото ${idx + 1}`}
-                  className="h-32 w-32 object-cover rounded"
-                />
-                {isAdmin && (
-                  <button
-                    onClick={() => handleRemovePhoto(path)}
-                    className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                  >
-                    &times;
-                  </button>
-                )}
-              </div>
-            ))}
+            {photoPaths.map((path, idx) => {
+              const normalized = path.startsWith('/') ? path : `/${path}`;
+              const src = normalized.startsWith('http')
+                ? normalized
+                : `${API_BASE}${normalized}`;
+              return (
+                <div key={idx} className="relative">
+                  <img
+                    src={src}
+                    alt={`Фото ${idx + 1}`}
+                    className="h-32 w-32 object-cover rounded"
+                  />
+                  {isAdmin && (
+                    <button
+                      onClick={() => handleRemovePhoto(path)}
+                      className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         ) : (
           <p className="text-gray-500">Нет фото.</p>
@@ -175,9 +198,14 @@ export default function NewsDetail() {
 
         {isAdmin && (
           <div className="mt-4 flex items-center space-x-2">
-            <input type="file" onChange={handleInput} />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleUpload}
+            />
             <button
-              onClick={handleUploadPhoto}
+              onClick={handleUpload}
               className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
             >
               Загрузить фото
@@ -186,7 +214,7 @@ export default function NewsDetail() {
         )}
       </div>
 
-      {/* Админ-кнопки */}
+      {/* Admin actions */}
       {isAdmin && !editMode && (
         <div className="space-x-2">
           <button
@@ -196,10 +224,10 @@ export default function NewsDetail() {
             Редактировать
           </button>
           <button
-            onClick={handleDeleteNews}
+            onClick={handleDelete}
             className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
           >
-            Удалить новость
+            Удалить запись
           </button>
         </div>
       )}

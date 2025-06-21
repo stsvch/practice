@@ -50,9 +50,14 @@ export const deleteCaseStudy = async (id) => {
   await api.delete(`${ENDPOINT}/${id}`);
 };
 
-
-// Удалить фото из кейса
+// src/api/caseStudiesApi.js
 export const removeCaseStudyPhoto = async (caseId, photoId) => {
-  const res = await api.delete(`${ENDPOINT}/${caseId}/photos/${photoId}`);
-  return res.data;
+  await api.delete(`${ENDPOINT}/${caseId}/photos/${photoId}`);
+};
+
+export const removeCaseStudyPhotoByPath = async (caseId, path) => {
+  await api.delete(
+    `${ENDPOINT}/${caseId}/photos`,
+    { params: { path } }
+  );
 };
